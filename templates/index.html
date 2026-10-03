@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HalluciGuard — Hallucination Stress Test</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div class="brand-text">
+          <h2>HalluciGuard</h2>
+          <span class="brand-tag">Stress-Test Bench</span>
+        </div>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-section="dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-section="live-test">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <span>Live Test</span>
+        </button>
+        <button class="nav-item" data-section="benchmark">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          <span>Benchmark (25 Traps)</span>
+        </button>
+        <button class="nav-item" data-section="results">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          <span>Results (150 Matrix)</span>
+        </button>
+        <button class="nav-item" data-section="methodology">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <span>Methodology</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="server-badge">
+          <span class="status-dot online"></span>
+          <div class="server-info">
+            <span class="server-title">Flask Server</span>
+            <span class="server-sub">Local Demo • 127.0.0.1:5000</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+
+      <!-- SECTION 1: DASHBOARD -->
+      <section id="section-dashboard" class="content-section active">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">Hallucination Stress Test</h1>
+            <p class="page-subtitle">Evaluate how prompting strategies affect LLM reliability when exposed to fabricated premises.</p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-secondary" onclick="loadDashboardStats()">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              Refresh Data
+            </button>
+            <button class="btn btn-primary" onclick="switchNav('live-test')">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Run Live Test
+            </button>
+          </div>
+        </div>
+
+        <!-- Top Metric Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-label">Benchmark Combinations</div>
+            <div class="metric-value cyan-text" id="stat-total-combinations">150</div>
+            <div class="metric-detail">25 Traps × 3 Prompts × 2 Models</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Successful Evaluations</div>
+            <div class="metric-value green-text" id="stat-successful-evaluations">43</div>
+            <div class="metric-detail">Complete LLM responses evaluated</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">API Failures / Quota Limited</div>
+            <div class="metric-value red-text" id="stat-api-failures">107</div>
+            <div class="metric-detail">Daily free-tier quota ceiling reached</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-label">Trap Questions</div>
+            <div class="metric-value purple-text" id="stat-trap-questions">25</div>
+            <div class="metric-detail">Curated counter-factual categories</div>
+          </div>
+        </div>
+
+        <!-- Transparency Callout Banner -->
+        <div class="transparency-banner">
+          <div class="banner-icon">ℹ️</div>
+          <div class="banner-content">
+            <strong>Transparency Notice:</strong>
+            <span id="transparency-text">150 benchmark combinations • 43 successful model evaluations currently available</span>.
+            API errors caused by provider rate-limits are strictly segregated and <em>never</em> counted as model hallucinations.
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Model Hallucination Rate Comparison</div>
+              <span class="sample-badge" id="sample-models">Based on available evaluations</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-models"></canvas>
+            </div>
+            <div class="chart-footer-note">Measured on successful model calls: (Hallucinated + Partial) / Total.</div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <div class="chart-title">Prompt Strategy Reliability Comparison</div>
+              <span class="sample-badge" id="sample-prompts">V1 vs V2 vs V3</span>
+            </div>
+            <div class="chart-container">
+              <canvas id="chart-prompts"></canvas>
+            </div>
+            <div class="chart-footer-note">Displaying measured hallucination rate by prompting strategy.</div>
+          </div>
+        </div>
+
+        <!-- Classification Breakdown Grid -->
+        <div class="card mt-24">
+          <div class="card-header">
+            <h3>Classification Distribution</h3>
+            <span class="subtext">Breakdown of model responses on tested traps</span>
+          </div>
+          <div class="class-summary-grid">
+            <div class="class-stat-box box-correct">
+              <div class="box-badge badge-correct">CORRECT</div>
+              <div class="box-num" id="class-correct">30</div>
+              <div class="box-desc">Refuted false premise or refused fabrication</div>
+            </div>
+            <div class="class-stat-box box-hallucinated">
+              <div class="box-badge badge-hallucinated">HALLUCINATED</div>
+              <div class="box-num" id="class-hallucinated">1</div>
+              <div class="box-desc">Accepted false premise as real & fabricated facts</div>
+            </div>
+            <div class="class-stat-box box-partial">
+              <div class="box-badge badge-partial">PARTIAL HALLUCINATION</div>
+              <div class="box-num" id="class-partial">5</div>
+              <div class="box-desc">Caught some falsehoods but accepted others</div>
+            </div>
+            <div class="class-stat-box box-uncertain">
+              <div class="box-badge badge-uncertain">UNCERTAIN</div>
+              <div class="box-num" id="class-uncertain">7</div>
+              <div class="box-desc">Inconclusive or ambiguous hedging</div>
+            </div>
+            <div class="class-stat-box box-error">
+              <div class="box-badge badge-error">API ERRORS</div>
+              <div class="box-num" id="class-error">107</div>
+              <div class="box-desc">Provider 429 quota exhaustion (kept separate)</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: LIVE TEST -->
+      <section id="section-live-test" class="content-section">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">Live Stress Test</h1>
+            <p class="page-subtitle">Stress-test an LLM with an unseen question or benchmark trap across 6 prompt/model combinations.</p>
+          </div>
+        </div>
+
+        <div class="card live-test-box">
+          <div class="input-header">
+            <label for="live-question-input" class="input-label">Test a New Question</label>
+            <div class="preset-pills">
+              <span class="preset-label">Quick Load:</span>
+              <button class="pill-btn" onclick="loadPreset('T01')">T01 Trap (Quantum Tea Brewing)</button>
+              <button class="pill-btn" onclick="loadPreset('T06')">T06 Trap (2011 Census Handedness)</button>
+              <button class="pill-btn" onclick="loadPreset('T20')">T20 Trap (Akbar Taj Mahal)</button>
+              <button class="pill-btn" onclick="loadPreset('factual')">Factual Question (Everest)</button>
+            </div>
+          </div>
+
+          <textarea id="live-question-input" rows="3" class="custom-textarea" placeholder="Enter a question containing a false premise or factual query..."></textarea>
+          
+          <div class="input-footer">
+            <div class="info-tag">Will trigger 6 evaluations: (OpenAI × V1, V2, V3) + (Gemini × V1, V2, V3)</div>
+            <button id="btn-run-test" class="btn btn-primary" onclick="executeLiveTest()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              <span>Run Hallucination Test</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading Progress Indicator -->
+        <div id="live-test-loader" class="test-loader hidden">
+          <div class="spinner"></div>
+          <div class="loader-text">
+            <h3>Running 6 evaluations...</h3>
+            <p>Evaluating question across V1 (Basic), V2 (Fact-Check), and V3 (Defensive) prompts on OpenAI and Gemini.</p>
+          </div>
+        </div>
+
+        <!-- Results Container for 6 cards -->
+        <div id="live-results-container" class="live-results-area hidden">
+          <!-- OpenAI Column -->
+          <div class="model-results-column">
+            <div class="column-header openai-header">
+              <div class="model-logo">🤖</div>
+              <div>
+                <h2>OpenAI (gpt-6-luna)</h2>
+                <span>3 Prompt Variations</span>
+              </div>
+            </div>
+            <div class="cards-stack" id="openai-eval-cards">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+
+          <!-- Gemini Column -->
+          <div class="model-results-column">
+            <div class="column-header gemini-header">
+              <div class="model-logo">✨</div>
+              <div>
+                <h2>Gemini (gemini-3.8-flash)</h2>
+                <span>3 Prompt Variations</span>
+              </div>
+            </div>
+            <div class="cards-stack" id="gemini-eval-cards">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 3: BENCHMARK (25 TRAPS) -->
+      <section id="section-benchmark" class="content-section">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">The 25 Traps Benchmark</h1>
+            <p class="page-subtitle">Inspect the complete curated suite of counter-factual questions and expected safe behaviors.</p>
+          </div>
+          <div class="filter-controls">
+            <input type="text" id="bench-search" class="search-input" placeholder="Search traps..." oninput="filterBenchmarkTable()">
+            <select id="bench-cat-filter" class="custom-select" onchange="filterBenchmarkTable()">
+              <option value="">All Categories</option>
+            </select>
+            <select id="bench-diff-filter" class="custom-select" onchange="filterBenchmarkTable()">
+              <option value="">All Difficulties</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table" id="traps-table">
+            <thead>
+              <tr>
+                <th style="width: 80px;">ID</th>
+                <th style="width: 180px;">Category</th>
+                <th style="width: 100px;">Difficulty</th>
+                <th>Question</th>
+                <th>Expected Safe Behavior</th>
+                <th style="width: 100px;">Action</th>
+              </tr>
+            </thead>
+            <tbody id="traps-tbody">
+              <!-- Loaded via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 4: RESULTS (150 MATRIX) -->
+      <section id="section-results" class="content-section">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">Benchmark Results</h1>
+            <p class="page-subtitle">Browse and filter the 150 test executions from the full evaluation run.</p>
+          </div>
+          <div class="filter-controls">
+            <input type="text" id="res-search" class="search-input" placeholder="Search ID or query..." oninput="filterResultsTable()">
+            <select id="res-model-filter" class="custom-select" onchange="filterResultsTable()">
+              <option value="">All Models</option>
+              <option value="openai">OpenAI</option>
+              <option value="gemini">Gemini</option>
+            </select>
+            <select id="res-prompt-filter" class="custom-select" onchange="filterResultsTable()">
+              <option value="">All Prompts</option>
+              <option value="V1">V1 (Basic)</option>
+              <option value="V2">V2 (Fact-Check)</option>
+              <option value="V3">V3 (Defensive)</option>
+            </select>
+            <select id="res-class-filter" class="custom-select" onchange="filterResultsTable()">
+              <option value="">All Classifications</option>
+              <option value="CORRECT">CORRECT</option>
+              <option value="HALLUCINATED">HALLUCINATED</option>
+              <option value="PARTIAL_HALLUCINATION">PARTIAL HALLUCINATION</option>
+              <option value="UNCERTAIN">UNCERTAIN</option>
+              <option value="API_ERROR">API ERROR</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table" id="results-table">
+            <thead>
+              <tr>
+                <th style="width: 70px;">Trap</th>
+                <th style="width: 90px;">Model</th>
+                <th style="width: 80px;">Prompt</th>
+                <th style="width: 160px;">Classification</th>
+                <th style="width: 110px;">Premise Valid</th>
+                <th>Response Preview</th>
+                <th style="width: 100px;">Status</th>
+                <th style="width: 80px;">Details</th>
+              </tr>
+            </thead>
+            <tbody id="results-tbody">
+              <!-- Loaded via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 5: METHODOLOGY -->
+      <section id="section-methodology" class="content-section">
+        <div class="section-header">
+          <div>
+            <h1 class="page-title">How HalluciGuard Works</h1>
+            <p class="page-subtitle">Architectural design, prompt engineering strategies, and stress-testing methodology.</p>
+          </div>
+        </div>
+
+        <!-- Pipeline Flowchart -->
+        <div class="card methodology-pipeline">
+          <div class="pipeline-step">
+            <div class="step-num">1</div>
+            <div class="step-title">25 Trap Questions</div>
+            <div class="step-desc">Nonexistent papers, fake laws, false dates, anachronisms</div>
+          </div>
+          <div class="pipeline-arrow">➔</div>
+          <div class="pipeline-step">
+            <div class="step-num">2</div>
+            <div class="step-title">3 Prompt Strategies</div>
+            <div class="step-desc">V1 Basic, V2 Fact-Check, V3 Defensive reasoning</div>
+          </div>
+          <div class="pipeline-arrow">➔</div>
+          <div class="pipeline-step">
+            <div class="step-num">3</div>
+            <div class="step-title">2 LLM Models</div>
+            <div class="step-desc">OpenAI (gpt-6-luna) & Gemini (gemini-3.8-flash)</div>
+          </div>
+          <div class="pipeline-arrow">➔</div>
+          <div class="pipeline-step">
+            <div class="step-num">4</div>
+            <div class="step-title">6 Evaluations</div>
+            <div class="step-desc">150 total combinations systematically tested</div>
+          </div>
+          <div class="pipeline-arrow">➔</div>
+          <div class="pipeline-step">
+            <div class="step-num">5</div>
+            <div class="step-title">Classification</div>
+            <div class="step-desc">Premise acceptance vs rejection verification</div>
+          </div>
+        </div>
+
+        <div class="prompt-cards-grid mt-24">
+          <div class="prompt-desc-card">
+            <div class="prompt-badge v1-badge">V1 — BASIC</div>
+            <h3>Direct Response Prompt</h3>
+            <p class="prompt-role">Baseline system prompt instructing the model to be a helpful assistant without verification constraints.</p>
+            <div class="prompt-box">
+              <code>You are a helpful assistant. Answer the user's question as clearly and completely as possible.</code>
+            </div>
+            <div class="prompt-effect">
+              <strong>Observed Effect:</strong> Models frequently exhibit conversational compliance, accepting false premises to be helpful.
+            </div>
+          </div>
+
+          <div class="prompt-desc-card">
+            <div class="prompt-badge v2-badge">V2 — FACT-CHECK</div>
+            <h3>Factual Premise Verification</h3>
+            <p class="prompt-role">Requires models to verify named entities, events, citations, and dates before answering.</p>
+            <div class="prompt-box">
+              <code>Rules: If the question contains a false premise, a nonexistent entity, or a reference you cannot verify, say so explicitly instead of answering as if it were true. Do not invent facts.</code>
+            </div>
+            <div class="prompt-effect">
+              <strong>Observed Effect:</strong> Drastically suppresses hallucinations (down to 0.0% on OpenAI successful evals).
+            </div>
+          </div>
+
+          <div class="prompt-desc-card">
+            <div class="prompt-badge v3-badge">V3 — DEFENSIVE</div>
+            <h3>Structured Two-Stage Verification</h3>
+            <p class="prompt-role">Requires two explicit reasoning stages (Stage 1 Claim Verification + Stage 2 Final Answer) and strict JSON output.</p>
+            <div class="prompt-box">
+              <code>STAGE 1 — VERIFICATION: List every factual claim and confirm validity.<br>STAGE 2 — FINAL ANSWER: If claims fail verification, refuse the original premise. Return exact JSON.</code>
+            </div>
+            <div class="prompt-effect">
+              <strong>Observed Effect:</strong> Forces machine-parseable output (<code>claims_checked</code>, <code>premise_valid</code>) preventing ungrounded generation.
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Detail Modal for Results/V3 -->
+  <div id="detail-modal" class="modal-backdrop hidden" onclick="closeModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="modal-title">Evaluation Details</h3>
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
